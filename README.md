@@ -24,4 +24,7 @@ Usage of ./srufetch:
   -version
         show version
   -x    try to dig out record via regex (XXX: a simple xml.Encode failed)
+
+$ srufetch -verbose -e http://sru.k10plus.de/gvk -q "pica.ssg=24,1 or pica.ssg=bbi or pica.sfk=bub or pica.osg=bbi" > data.xml
+$ yaz-marcdump -i marcxml -o marc data.xml data.mrc
 ```
