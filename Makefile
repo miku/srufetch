@@ -2,6 +2,9 @@ SHELL = /bin/bash
 TARGETS = srufetch
 PKGNAME = srufetch
 
+VERSION := $(shell ([ -f VERSION ] && cat VERSION) || (git rev-parse --short HEAD))
+BUILDTIME := $(shell date -u '+%Y-%m-%dT%H:%M:%SZ')
+
 .PHONY: all assets bench clean clean-docs cloc deb deps imports lint members names rpm test vet
 
 all: deps $(TARGETS)
@@ -10,7 +13,7 @@ deps:
 	go get -v ./...
 
 $(TARGETS): %: cmd/%/main.go
-	go build -ldflags=-linkmode=external -o $@ $<
+	go build -ldflags="-linkmode=external -X main.Version=$(VERSION) -X main.BuildTime=$(BUILDTIME)" -o $@ $<
 
 clean:
 	rm -f $(TARGETS)

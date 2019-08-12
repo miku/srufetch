@@ -17,6 +17,7 @@ import (
 	"io"
 	"log"
 	"net/url"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -32,6 +33,10 @@ var (
 	limit          = flag.Int("l", -1, "total limit to retrieve, -1 for no limit")
 	recordRegex    = flag.Bool("x", false, "try to dig out record via regex (XXX: a simple xml.Encode failed)")
 	query          = flag.String("q", "pica.ssg=24,1 or pica.ssg=bbi or pica.sfk=bub or pica.osg=bbi", "sru query")
+	showVersion    = flag.Bool("version", false, "show version")
+
+	Version   string
+	BuildTime string
 )
 
 // SearchRetrieveResponse was generated 2019-07-17 14:05:42 by tir on sol.
@@ -84,6 +89,11 @@ type SearchRetrieveResponse struct {
 
 func main() {
 	flag.Parse()
+
+	if *showVersion {
+		fmt.Printf("%s %s\n", Version, BuildTime)
+		os.Exit(0)
+	}
 
 	var vs = url.Values{}
 	vs.Set("version", "1.2")
