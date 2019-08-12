@@ -10,3 +10,8 @@
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
+
+/srufetch
+/srufetch_*deb
+/srufetch-*rpm
+/packaging/deb/srufetch/usr/*
