@@ -33,6 +33,7 @@ var (
 	limit          = flag.Int("l", -1, "total limit to retrieve, -1 for no limit")
 	recordRegex    = flag.Bool("x", false, "try to dig out record via regex (XXX: a simple xml.Encode failed)")
 	query          = flag.String("q", "pica.ssg=24,1 or pica.ssg=bbi or pica.sfk=bub or pica.osg=bbi", "sru query")
+	recordSchema   = flag.String("a", "", "recordSchema (http://www.loc.gov/standards/sru/recordSchemas/)")
 	showVersion    = flag.Bool("version", false, "show version")
 
 	Version   string
@@ -100,6 +101,10 @@ func main() {
 	vs.Set("operation", "searchRetrieve")
 	vs.Set("query", *query)
 	vs.Set("maximumRecords", strconv.Itoa(*maximumRecords))
+
+	if *recordSchema != "" {
+		vs.Set("recordSchema", *recordSchema)
+	}
 
 	var retrieved int
 
