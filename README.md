@@ -1,6 +1,7 @@
 # srufetch
 
-Basic SRU endpoint retrieval.
+Basic SRU endpoint retrieval. For a more serious implementation, see
+[yaz-client](https://software.indexdata.com/yaz/doc/yaz-client.html).
 
 Request w/o params will yield an ExplainResponse, e.g. http://sru.k10plus.de/gvk.
 
@@ -9,6 +10,8 @@ Example request: [sru.k10plus.de/gvk?version=1.2...](http://sru.k10plus.de/gvk?v
 ```
 $ srufetch -h
 Usage of ./srufetch:
+  -a string
+        recordSchema (http://www.loc.gov/standards/sru/recordSchemas/)
   -e string
         endpoint (default "http://sru.k10plus.de/gvk")
   -l int
