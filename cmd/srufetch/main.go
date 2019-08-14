@@ -16,6 +16,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net/http"
 	"net/url"
 	"os"
 	"regexp"
@@ -35,6 +36,7 @@ var (
 	query          = flag.String("q", "pica.ssg=24,1 or pica.ssg=bbi or pica.sfk=bub or pica.osg=bbi", "sru query")
 	recordSchema   = flag.String("a", "", "recordSchema (http://www.loc.gov/standards/sru/recordSchemas/)")
 	showVersion    = flag.Bool("version", false, "show version")
+	userAgent      = flag.String("ua", "Mozilla/5.0 (Windows NT x.y; rv:10.0) Gecko/20100101 Firefox/10.0", "set user agent")
 
 	Version   string
 	BuildTime string
@@ -117,6 +119,10 @@ func main() {
 	client := &pester.Client{
 		Backoff:    pester.ExponentialBackoff,
 		MaxRetries: 7,
+		KeepLog:    true,
+		LogHook: func(e pester.ErrEntry) {
+			log.Println(e)
+		},
 	}
 
 	for {
@@ -127,8 +133,16 @@ func main() {
 			log.Println(link)
 		}
 
+		req, err := http.NewRequest("GET", link, nil)
+		if err != nil {
+			log.Fatal(err)
+		}
+		if *userAgent != "" {
+			req.Header.Add("User-Agent", *userAgent)
+		}
+
 		// req.Header.Add("Accept-Encoding", "identity"), https://stackoverflow.com/q/21147562/89391
-		resp, err := client.Get(link)
+		resp, err := client.Do(req)
 		if err != nil {
 			log.Fatal(err)
 		}
