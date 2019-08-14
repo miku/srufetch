@@ -15,3 +15,4 @@
 /srufetch_*deb
 /srufetch-*rpm
 /packaging/deb/srufetch/usr/*
+/tmp
