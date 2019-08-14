@@ -114,6 +114,11 @@ func main() {
 		fmt.Println("<collection>")
 	}
 
+	client := &pester.Client{
+		Backoff:    pester.ExponentialBackoff,
+		MaxRetries: 7,
+	}
+
 	for {
 		vs.Set("startRecord", strconv.Itoa(*startRecord))
 
@@ -123,7 +128,7 @@ func main() {
 		}
 
 		// req.Header.Add("Accept-Encoding", "identity"), https://stackoverflow.com/q/21147562/89391
-		resp, err := pester.Get(link)
+		resp, err := client.Get(link)
 		if err != nil {
 			log.Fatal(err)
 		}
