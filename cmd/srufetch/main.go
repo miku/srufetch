@@ -36,7 +36,7 @@ var (
 	query          = flag.String("q", "pica.ssg=24,1 or pica.ssg=bbi or pica.sfk=bub or pica.osg=bbi", "sru query")
 	recordSchema   = flag.String("a", "", "recordSchema (http://www.loc.gov/standards/sru/recordSchemas/)")
 	showVersion    = flag.Bool("version", false, "show version")
-	userAgent      = flag.String("ua", "Mozilla/5.0 (Windows NT x.y; rv:10.0) Gecko/20100101 Firefox/10.0", "set user agent")
+	userAgent      = flag.String("ua", "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0)", "set user agent")
 
 	Version   string
 	BuildTime string
@@ -116,14 +116,9 @@ func main() {
 		fmt.Println("<collection>")
 	}
 
-	client := &pester.Client{
-		Backoff:    pester.ExponentialBackoff,
-		MaxRetries: 7,
-		KeepLog:    true,
-		LogHook: func(e pester.ErrEntry) {
-			log.Println(e)
-		},
-	}
+	client := pester.New()
+	client.Backoff = pester.ExponentialBackoff
+	client.MaxRetries = 7
 
 	for {
 		vs.Set("startRecord", strconv.Itoa(*startRecord))
