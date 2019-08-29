@@ -29,12 +29,12 @@ import (
 var (
 	startRecord    = flag.Int("s", 1, "SRU startRecord, zero won't work")
 	maximumRecords = flag.Int("m", 10, "maximum records per request")
-	endpoint       = flag.String("e", "http://sru.k10plus.de/gvk", "endpoint")
+	endpoint       = flag.String("e", "https://sru.bsz-bw.de/swb299", "endpoint")
 	verbose        = flag.Bool("verbose", false, "increase log output")
 	limit          = flag.Int("l", -1, "total limit to retrieve, -1 for no limit")
 	recordRegex    = flag.Bool("x", false, "try to dig out record via regex (XXX: a simple xml.Encode failed)")
-	query          = flag.String("q", "pica.ssg=24,1 or pica.ssg=bbi or pica.sfk=bub or pica.osg=bbi", "sru query")
-	recordSchema   = flag.String("a", "", "recordSchema (http://www.loc.gov/standards/sru/recordSchemas/)")
+	query          = flag.String("q", `pica.rvk="A*"`, "sru query")
+	recordSchema   = flag.String("a", "picaxml", "recordSchema (http://www.loc.gov/standards/sru/recordSchemas/)")
 	showVersion    = flag.Bool("version", false, "show version")
 	userAgent      = flag.String("ua", "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0)", "set user agent")
 
