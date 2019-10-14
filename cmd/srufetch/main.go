@@ -27,16 +27,17 @@ import (
 )
 
 var (
-	startRecord    = flag.Int("s", 1, "SRU startRecord, zero won't work")
-	maximumRecords = flag.Int("m", 10, "maximum records per request")
-	endpoint       = flag.String("e", "https://sru.bsz-bw.de/swb299", "endpoint")
-	verbose        = flag.Bool("verbose", false, "increase log output")
-	limit          = flag.Int("l", -1, "total limit to retrieve, -1 for no limit")
-	recordRegex    = flag.Bool("x", false, "try to dig out record via regex (XXX: a simple xml.Encode failed)")
-	query          = flag.String("q", `pica.rvk="A*"`, "sru query")
-	recordSchema   = flag.String("a", "picaxml", "recordSchema (http://www.loc.gov/standards/sru/recordSchemas/)")
-	showVersion    = flag.Bool("version", false, "show version")
-	userAgent      = flag.String("ua", "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0)", "set user agent")
+	startRecord      = flag.Int("s", 1, "SRU startRecord, zero won't work")
+	maximumRecords   = flag.Int("m", 10, "maximum records per request")
+	endpoint         = flag.String("e", "https://sru.bsz-bw.de/swb299", "endpoint")
+	verbose          = flag.Bool("verbose", false, "increase log output")
+	limit            = flag.Int("l", -1, "total limit to retrieve, -1 for no limit")
+	recordRegex      = flag.Bool("x", false, "try to dig out record via regex (XXX: a simple xml.Encode failed)")
+	query            = flag.String("q", `pica.rvk="A*"`, "sru query")
+	recordSchema     = flag.String("a", "picaxml", "recordSchema (http://www.loc.gov/standards/sru/recordSchemas/)")
+	showVersion      = flag.Bool("version", false, "show version")
+	userAgent        = flag.String("ua", "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0)", "set user agent")
+	ignoreHTTPErrors = flag.Bool("ignore-http-errors", false, "do not fail on HTTP 400 or higher")
 
 	Version   string
 	BuildTime string
@@ -141,8 +142,15 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		var buf bytes.Buffer
 		defer resp.Body.Close()
+		if resp.StatusCode >= 400 {
+			if *ignoreHTTPErrors {
+				log.Printf("ignoring per flag: %s", resp.Status)
+			} else {
+				log.Fatal(resp.Status)
+			}
+		}
+		var buf bytes.Buffer
 		tee := io.TeeReader(resp.Body, &buf)
 
 		dec := xml.NewDecoder(tee)
