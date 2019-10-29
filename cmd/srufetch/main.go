@@ -137,7 +137,7 @@ func main() {
 			req.Header.Add("User-Agent", *userAgent)
 		}
 
-		// req.Header.Add("Accept-Encoding", "identity"), https://stackoverflow.com/q/21147562/89391
+		req.Header.Add("Accept-Encoding", "identity") // https://stackoverflow.com/q/21147562/89391
 		resp, err := client.Do(req)
 		if err != nil {
 			log.Fatal(err)
@@ -175,7 +175,7 @@ func main() {
 		buf.Reset()
 
 		*startRecord = *startRecord + *maximumRecords
-		if *startRecord > srr.NumberOfRecords {
+		if *startRecord >= srr.NumberOfRecords {
 			break
 		}
 	}
