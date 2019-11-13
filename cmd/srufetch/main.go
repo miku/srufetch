@@ -32,7 +32,7 @@ var (
 	endpoint         = flag.String("e", "https://sru.bsz-bw.de/swb299", "endpoint")
 	verbose          = flag.Bool("verbose", false, "increase log output")
 	limit            = flag.Int("l", -1, "total limit to retrieve, -1 for no limit")
-	recordRegex      = flag.Bool("x", false, "try to dig out record via regex (XXX: a simple xml.Encode failed)")
+	recordRegex      = flag.Bool("x", false, "try to dig out record via regex (XXX: a simple xml.Decode failed)")
 	query            = flag.String("q", `pica.rvk="A*"`, "sru query")
 	recordSchema     = flag.String("a", "picaxml", "recordSchema (http://www.loc.gov/standards/sru/recordSchemas/)")
 	showVersion      = flag.Bool("version", false, "show version")

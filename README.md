@@ -26,7 +26,7 @@ Usage of ./srufetch:
         increase log output
   -version
         show version
-  -x    try to dig out record via regex (XXX: a simple xml.Encode failed)
+  -x    try to dig out record via regex (XXX: a simple xml.Decode failed)
 
 $ srufetch -x -verbose -e http://sru.k10plus.de/gvk \
            -q "pica.ssg=24,1 or pica.ssg=bbi or pica.sfk=bub or pica.osg=bbi" > data.xml
