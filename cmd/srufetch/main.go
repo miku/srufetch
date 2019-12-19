@@ -38,6 +38,7 @@ var (
 	showVersion      = flag.Bool("version", false, "show version")
 	userAgent        = flag.String("ua", "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0)", "set user agent")
 	ignoreHTTPErrors = flag.Bool("ignore-http-errors", false, "do not fail on HTTP 400 or higher")
+	sruVersion       = flag.String("sru-version", "1.1", "set SRU version")
 
 	Version   string
 	BuildTime string
@@ -100,7 +101,7 @@ func main() {
 	}
 
 	var vs = url.Values{}
-	vs.Set("version", "1.2")
+	vs.Set("version", *sruVersion)
 	vs.Set("operation", "searchRetrieve")
 	vs.Set("query", *query)
 	vs.Set("maximumRecords", strconv.Itoa(*maximumRecords))
