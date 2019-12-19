@@ -39,6 +39,7 @@ var (
 	userAgent        = flag.String("ua", "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0)", "set user agent")
 	ignoreHTTPErrors = flag.Bool("ignore-http-errors", false, "do not fail on HTTP 400 or higher")
 	sruVersion       = flag.String("sru-version", "1.1", "set SRU version")
+	extractionRegex  = flag.String("xr", "(?ms)(<[a-z:]*record(.*?)</[a-z:]*record>)", "(go) regular expression to parse out records")
 
 	Version   string
 	BuildTime string
@@ -112,10 +113,14 @@ func main() {
 
 	var retrieved int
 
-	re := regexp.MustCompile(`(?ms)(<record(.*?)</record>)`)
+	re, err := regexp.Compile(*extractionRegex)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	if *recordRegex {
-		fmt.Println("<collection>")
+		// TODO(miku): make NS list configurable.
+		fmt.Println(`<collection xmlns:zs="http://www.loc.gov/zing/srw/" xmlns:marc="http://www.loc.gov/MARC21/slim">`)
 	}
 
 	client := pester.New()
