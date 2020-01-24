@@ -168,13 +168,13 @@ func main() {
 			req.Header.Add("Accept-Encoding", "identity") // https://stackoverflow.com/q/21147562/89391
 			resp, err := client.Do(req)
 			if err != nil {
+				lastRequestFailed = true
 				return err
 			}
 			defer resp.Body.Close()
 			defer func() {
 				time.Sleep(*sleep)
 			}()
-
 			// Keep record for inc.
 			lastRequestFailed = resp.StatusCode >= 400
 
