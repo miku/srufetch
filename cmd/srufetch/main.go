@@ -133,32 +133,37 @@ func main() {
 	client.SetRetryOnHTTP429(true)
 
 	// By how much we progress.
-	inc := *maximumRecords
+	var (
+		inc               = *maximumRecords
+		lastRequestFailed bool
+	)
 
 	for {
-		vs.Set("startRecord", strconv.Itoa(*startRecord))
-
-		if *randomizeRecordsPerRequest {
-			inc = 1 + rand.Intn(*maximumRecords-1)
-			vs.Set("maximumRecords", strconv.Itoa(inc))
-		}
-
-		link := fmt.Sprintf("%s?%s", *endpoint, vs.Encode())
-		if *verbose {
-			log.Println(link)
-		}
-
-		req, err := http.NewRequest("GET", link, nil)
-		if err != nil {
-			log.Fatal(err)
-		}
-		if *userAgent != "" {
-			req.Header.Add("User-Agent", *userAgent)
-		}
-
 		// Wrap request into function, so we can defer the close on response
 		// body. Returns io.EOF, when done.
 		fetch := func() error {
+			vs.Set("startRecord", strconv.Itoa(*startRecord))
+
+			if *randomizeRecordsPerRequest {
+				inc = 1 + rand.Intn(*maximumRecords-1)
+			}
+			if lastRequestFailed {
+				inc = 1 // Crawl forward, so we miss as little as possible.
+			}
+			vs.Set("maximumRecords", strconv.Itoa(inc))
+
+			link := fmt.Sprintf("%s?%s", *endpoint, vs.Encode())
+			if *verbose {
+				log.Println(link)
+			}
+
+			req, err := http.NewRequest("GET", link, nil)
+			if err != nil {
+				log.Fatal(err)
+			}
+			if *userAgent != "" {
+				req.Header.Add("User-Agent", *userAgent)
+			}
 			req.Header.Add("Accept-Encoding", "identity") // https://stackoverflow.com/q/21147562/89391
 			resp, err := client.Do(req)
 			if err != nil {
@@ -180,6 +185,7 @@ func main() {
 					return fmt.Errorf("%s failed with: %s", link, resp.Status)
 				}
 			}
+			lastRequestFailed = resp.StatusCode >= 400
 			var buf bytes.Buffer
 			tee := io.TeeReader(resp.Body, &buf)
 
