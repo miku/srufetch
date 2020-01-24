@@ -179,6 +179,8 @@ func main() {
 			if resp.StatusCode >= 400 {
 				lastRequestFailed = true
 				inc = 1
+			} else {
+				lastRequestFailed = false
 			}
 
 			// Make sure we progress, even in the presence of errors.
