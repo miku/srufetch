@@ -7,6 +7,7 @@
 //
 // http://sru.k10plus.de/gvk?version=1.2&operation=searchRetrieve&query=pica.ssg=24,1%20or%20pica.ssg=bbi%20or%20pica.sfk=bub%20or%20pica.osg=bbi&maximumRecords=10&startRecord=10
 //
+// More on SRU: https://www.loc.gov/standards/sru/
 package main
 
 import (
