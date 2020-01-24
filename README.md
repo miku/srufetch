@@ -7,7 +7,7 @@ Request w/o params will yield an ExplainResponse, e.g. http://sru.k10plus.de/gvk
 
 Example request: [sru.k10plus.de/gvk?version=1.2...](http://sru.k10plus.de/gvk?version=1.2&operation=searchRetrieve&query=pica.ssg=24,1%20or%20pica.ssg=bbi%20or%20pica.sfk=bub%20or%20pica.osg=bbi&maximumRecords=10&startRecord=10)
 
-```
+```shell
 $ srufetch -h
 Usage of srufetch:
   -a string
@@ -37,8 +37,12 @@ Usage of srufetch:
         show version
   -x    try to dig out record via regex (XXX: a simple xml.Decode failed)
   -xr string
-        (go) regular expression to parse out records (default "(?ms)(<[a-z:]*record(.*?)</[a-z:]*record>)")
+        (go) regex to parse records (default "(?ms)(<[a-z:]*record(.*?)</[a-z:]*record>)")
+```
 
+## Examples
+
+```shell
 $ srufetch -x -verbose -e http://sru.k10plus.de/gvk \
            -q "pica.ssg=24,1 or pica.ssg=bbi or pica.sfk=bub or pica.osg=bbi" > data.xml
 $ yaz-marcdump -i marcxml -o marc data.xml data.mrc
@@ -46,7 +50,7 @@ $ yaz-marcdump -i marcxml -o marc data.xml data.mrc
 
 Some endpoints are a bit flaky, use `-r`, `-ignore-http-erros` to mitigate.
 
-```
+```shell
 $ srufetch -ignore-http-errors -r -verbose -m 100 -x -a "marc" \
     -e "https://muscat.rism.info/sru" -q "*" \
     -xr "(?ms)(<[a-z:]*recordData(.*?)</[a-z:]*recordData>)"
