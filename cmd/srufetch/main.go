@@ -22,6 +22,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/sethgrid/pester"
 )
@@ -40,6 +41,7 @@ var (
 	ignoreHTTPErrors = flag.Bool("ignore-http-errors", false, "do not fail on HTTP 400 or higher")
 	sruVersion       = flag.String("sru-version", "1.1", "set SRU version")
 	extractionRegex  = flag.String("xr", "(?ms)(<[a-z:]*record(.*?)</[a-z:]*record>)", "(go) regular expression to parse out records")
+	sleep            = flag.Duration("p", 0*time.Second, "time to sleep between requests")
 
 	Version   string
 	BuildTime string
@@ -126,6 +128,7 @@ func main() {
 	client := pester.New()
 	client.Backoff = pester.ExponentialBackoff
 	client.MaxRetries = 7
+	client.SetRetryOnHTTP429(true)
 
 	for {
 		vs.Set("startRecord", strconv.Itoa(*startRecord))
