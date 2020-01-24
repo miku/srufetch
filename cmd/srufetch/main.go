@@ -16,7 +16,6 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"log"
 	"math/rand"
 	"net/http"
 	"net/url"
@@ -27,6 +26,7 @@ import (
 	"time"
 
 	"github.com/sethgrid/pester"
+	log "github.com/sirupsen/logrus"
 )
 
 var (
@@ -183,7 +183,7 @@ func main() {
 
 			if resp.StatusCode >= 400 {
 				if *ignoreHTTPErrors {
-					log.Printf("ignoring per flag %s: %s", link, resp.Status)
+					log.Warnf("ignoring per flag %s: %s", link, resp.Status)
 					return nil
 				} else {
 					return fmt.Errorf("%s failed with: %s", link, resp.Status)
