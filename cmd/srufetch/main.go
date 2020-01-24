@@ -176,7 +176,10 @@ func main() {
 				time.Sleep(*sleep)
 			}()
 			// Keep record for inc.
-			lastRequestFailed = resp.StatusCode >= 400
+			if resp.StatusCode >= 400 {
+				lastRequestFailed = true
+				inc = 1
+			}
 
 			// Make sure we progress, even in the presence of errors.
 			*startRecord = *startRecord + inc
