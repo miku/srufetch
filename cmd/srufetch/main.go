@@ -168,9 +168,14 @@ func main() {
 			defer func() {
 				time.Sleep(*sleep)
 			}()
+
+			// Make sure we progress, even in the presence of errors.
+			*startRecord = *startRecord + inc
+
 			if resp.StatusCode >= 400 {
 				if *ignoreHTTPErrors {
-					log.Printf("ignoring per flag: %s", resp.Status)
+					log.Printf("ignoring per flag %s: %s", link, resp.Status)
+					return nil
 				} else {
 					return fmt.Errorf("%s failed with: %s", link, resp.Status)
 				}
@@ -197,8 +202,6 @@ func main() {
 				fmt.Println(buf.String())
 			}
 			buf.Reset()
-
-			*startRecord = *startRecord + inc
 			if *startRecord >= srr.NumberOfRecords {
 				return io.EOF
 			}
