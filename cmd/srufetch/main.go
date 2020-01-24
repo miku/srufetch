@@ -175,6 +175,9 @@ func main() {
 				time.Sleep(*sleep)
 			}()
 
+			// Keep record for inc.
+			lastRequestFailed = resp.StatusCode >= 400
+
 			// Make sure we progress, even in the presence of errors.
 			*startRecord = *startRecord + inc
 
@@ -186,7 +189,6 @@ func main() {
 					return fmt.Errorf("%s failed with: %s", link, resp.Status)
 				}
 			}
-			lastRequestFailed = resp.StatusCode >= 400
 			var buf bytes.Buffer
 			tee := io.TeeReader(resp.Body, &buf)
 
