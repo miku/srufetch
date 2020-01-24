@@ -1,6 +1,6 @@
 Summary:    Simple SRU fetch tool.
 Name:       srufetch
-Version:    0.1.8
+Version:    0.1.9
 Release:    0
 License:    GPL
 ExclusiveArch:  x86_64
