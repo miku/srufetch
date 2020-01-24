@@ -41,7 +41,7 @@ var (
 	ignoreHTTPErrors = flag.Bool("ignore-http-errors", false, "do not fail on HTTP 400 or higher")
 	sruVersion       = flag.String("sru-version", "1.1", "set SRU version")
 	extractionRegex  = flag.String("xr", "(?ms)(<[a-z:]*record(.*?)</[a-z:]*record>)", "(go) regular expression to parse out records")
-	sleep            = flag.Duration("p", 0*time.Second, "time to sleep between requests")
+	sleep            = flag.Duration("p", 100*time.Millisecond, "time to sleep between requests")
 
 	Version   string
 	BuildTime string
@@ -146,46 +146,61 @@ func main() {
 			req.Header.Add("User-Agent", *userAgent)
 		}
 
-		req.Header.Add("Accept-Encoding", "identity") // https://stackoverflow.com/q/21147562/89391
-		resp, err := client.Do(req)
+		// Wrap request into function, so we can defer the close on response
+		// body. Returns io.EOF, when done.
+		fetch := func() error {
+			req.Header.Add("Accept-Encoding", "identity") // https://stackoverflow.com/q/21147562/89391
+			resp, err := client.Do(req)
+			if err != nil {
+				return err
+			}
+			defer resp.Body.Close()
+			defer func() {
+				time.Sleep(*sleep)
+			}()
+			if resp.StatusCode >= 400 {
+				if *ignoreHTTPErrors {
+					log.Printf("ignoring per flag: %s", resp.Status)
+				} else {
+					return fmt.Errorf("%s failed with: %s", link, resp.Status)
+				}
+			}
+			var buf bytes.Buffer
+			tee := io.TeeReader(resp.Body, &buf)
+
+			dec := xml.NewDecoder(tee)
+			var srr SearchRetrieveResponse
+			if err := dec.Decode(&srr); err != nil {
+				return err
+			}
+			retrieved = retrieved + len(srr.Records.Record)
+			if *limit > -1 && retrieved >= *limit {
+				return io.EOF
+			}
+			// Try to dig out: <record ... </record>
+			if *recordRegex {
+				for _, match := range re.FindAllString(buf.String(), -1) {
+					match := strings.TrimSpace(match)
+					fmt.Println(match)
+				}
+			} else {
+				fmt.Println(buf.String())
+			}
+			buf.Reset()
+
+			*startRecord = *startRecord + *maximumRecords
+			if *startRecord >= srr.NumberOfRecords {
+				return io.EOF
+			}
+			return nil
+		}
+
+		err = fetch()
+		if err == io.EOF {
+			break
+		}
 		if err != nil {
 			log.Fatal(err)
-		}
-		defer resp.Body.Close()
-		if resp.StatusCode >= 400 {
-			if *ignoreHTTPErrors {
-				log.Printf("ignoring per flag: %s", resp.Status)
-			} else {
-				log.Fatal(resp.Status)
-			}
-		}
-		var buf bytes.Buffer
-		tee := io.TeeReader(resp.Body, &buf)
-
-		dec := xml.NewDecoder(tee)
-		var srr SearchRetrieveResponse
-		if err := dec.Decode(&srr); err != nil {
-			log.Fatal(err)
-		}
-		retrieved = retrieved + len(srr.Records.Record)
-		if *limit > -1 && retrieved >= *limit {
-			break
-		}
-
-		// Try to dig out: <record ... </record>
-		if *recordRegex {
-			for _, match := range re.FindAllString(buf.String(), -1) {
-				match := strings.TrimSpace(match)
-				fmt.Println(match)
-			}
-		} else {
-			fmt.Println(buf.String())
-		}
-		buf.Reset()
-
-		*startRecord = *startRecord + *maximumRecords
-		if *startRecord >= srr.NumberOfRecords {
-			break
 		}
 	}
 
