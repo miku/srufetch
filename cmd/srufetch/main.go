@@ -8,6 +8,14 @@
 // http://sru.k10plus.de/gvk?version=1.2&operation=searchRetrieve&query=pica.ssg=24,1%20or%20pica.ssg=bbi%20or%20pica.sfk=bub%20or%20pica.osg=bbi&maximumRecords=10&startRecord=10
 //
 // More on SRU: https://www.loc.gov/standards/sru/
+//
+// TODO(miku): Out of range error, seems like 999999 is a maximum start record.
+//
+// https://muscat.rism.info/sru?maximumRecords=20&operation=searchRetrieve&query=%2A&recordSchema=marc&startRecord=1000026&version=1.1
+//
+// https://www.loc.gov/standards/sru/diagnostics/diagnosticsList.html says:
+//
+// "For example, if the request matches 10 records, but the start position is greater than 10."
 package main
 
 import (
