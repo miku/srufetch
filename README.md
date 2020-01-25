@@ -30,7 +30,7 @@ Usage of srufetch:
   -sru-version string
         set SRU version (default "1.1")
   -ua string
-        set user agent (default "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0)")
+        set user agent (default "srufetch 0.1.10 (https://github.com/ubleipzig/srufetch)")
   -verbose
         increase log output
   -version
