@@ -1,13 +1,13 @@
 Summary:    Simple SRU fetch tool.
 Name:       srufetch
-Version:    0.1.9
+Version:    0.1.10
 Release:    0
 License:    GPL
 ExclusiveArch:  x86_64
 BuildRoot:  %{_tmppath}/%{name}-build
 Group:      System/Base
 Vendor:     Leipzig University Library, https://www.ub.uni-leipzig.de
-URL:        https://github.com/miku/srufetch
+URL:        https://github.com/ubleipzig/srufetch
 
 %description
 
