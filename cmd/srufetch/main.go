@@ -48,7 +48,7 @@ var (
 	query                      = flag.String("q", `pica.rvk="A*"`, "sru query")
 	recordSchema               = flag.String("a", "picaxml", "recordSchema (http://www.loc.gov/standards/sru/recordSchemas/)")
 	showVersion                = flag.Bool("version", false, "show version")
-	userAgent                  = flag.String("ua", "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0)", "set user agent")
+	userAgent                  = flag.String("ua", fmt.Sprintf("srufetch %s (https://github.com/ubleipzig/srufetch)", Version), "set user agent")
 	ignoreHTTPErrors           = flag.Bool("ignore-http-errors", false, "do not fail on HTTP 400 or higher")
 	sruVersion                 = flag.String("sru-version", "1.1", "set SRU version")
 	extractionRegex            = flag.String("xr", "(?ms)(<[a-z:]*record(.*?)</[a-z:]*record>)", "(go) regular expression to parse out records")
