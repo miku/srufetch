@@ -37,6 +37,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+var defaultExtractionRegex = "(?ms)(<[a-z:]*record(.*?)</[a-z:]*record>)"
+
 var (
 	startRecord                = flag.Int("s", 1, "SRU startRecord, zero won't work")
 	maximumRecords             = flag.Int("m", 10, "maximum records per request")
@@ -51,7 +53,7 @@ var (
 	userAgent                  = flag.String("ua", fmt.Sprintf("srufetch %s (https://github.com/ubleipzig/srufetch)", Version), "set user agent")
 	ignoreHTTPErrors           = flag.Bool("ignore-http-errors", false, "do not fail on HTTP 400 or higher")
 	sruVersion                 = flag.String("sru-version", "1.1", "set SRU version")
-	extractionRegex            = flag.String("xr", "(?ms)(<[a-z:]*record(.*?)</[a-z:]*record>)", "(go) regular expression to parse out records")
+	extractionRegex            = flag.String("xr", defaultExtractionRegex, "(go) regular expression to parse out records")
 	sleep                      = flag.Duration("p", 100*time.Millisecond, "time to sleep between requests")
 
 	Version   string
@@ -125,6 +127,11 @@ func main() {
 	}
 
 	var retrieved int
+
+	if *extractionRegex != defaultExtractionRegex {
+		// -xr w/o -x should still work; loophole: -xr is the same as default, and -x not given.
+		*recordRegex = true
+	}
 
 	re, err := regexp.Compile(*extractionRegex)
 	if err != nil {
