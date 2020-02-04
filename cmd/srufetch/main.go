@@ -53,7 +53,7 @@ var (
 	userAgent                  = flag.String("ua", fmt.Sprintf("srufetch %s (https://github.com/ubleipzig/srufetch)", Version), "set user agent")
 	ignoreHTTPErrors           = flag.Bool("ignore-http-errors", false, "do not fail on HTTP 400 or higher")
 	sruVersion                 = flag.String("sru-version", "1.1", "set SRU version")
-	extractionRegex            = flag.String("xr", defaultExtractionRegex, "(go) regular expression to parse out records")
+	extractionRegex            = flag.String("xr", defaultExtractionRegex, "(go) regular expression to parse out records, implies -x (mostly)")
 	sleep                      = flag.Duration("p", 100*time.Millisecond, "time to sleep between requests")
 
 	Version   string
@@ -135,7 +135,7 @@ func main() {
 
 	re, err := regexp.Compile(*extractionRegex)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("%v (learn more: https://github.com/google/re2/wiki/Syntax)")
 	}
 
 	if *recordRegex {
