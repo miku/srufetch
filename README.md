@@ -7,6 +7,16 @@ Request w/o params will yield an ExplainResponse, e.g. http://sru.k10plus.de/gvk
 
 Example request: [sru.k10plus.de/gvk?version=1.2...](http://sru.k10plus.de/gvk?version=1.2&operation=searchRetrieve&query=pica.ssg=24,1%20or%20pica.ssg=bbi%20or%20pica.sfk=bub%20or%20pica.osg=bbi&maximumRecords=10&startRecord=10)
 
+## Installation
+
+```
+$ go install github.com/miku/srufetch@latest
+```
+
+> [Releases](https://github.com/miku/srufetch/releases)
+
+## Usage
+
 ```shell
 $ srufetch -h
 Usage of srufetch:
