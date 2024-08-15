@@ -110,56 +110,45 @@ type SearchRetrieveResponse struct {
 
 func main() {
 	flag.Parse()
-
 	if *showVersion {
 		fmt.Printf("%s %s\n", Version, BuildTime)
 		os.Exit(0)
 	}
-
 	var vs = url.Values{}
 	vs.Set("version", *sruVersion)
 	vs.Set("operation", "searchRetrieve")
 	vs.Set("query", *query)
 	vs.Set("maximumRecords", strconv.Itoa(*maximumRecords))
-
 	if *recordSchema != "" {
 		vs.Set("recordSchema", *recordSchema)
 	}
-
 	var retrieved int
-
 	if *extractionRegex != defaultExtractionRegex {
 		// -xr w/o -x should still work; loophole: -xr is the same as default, and -x not given.
 		*recordRegex = true
 	}
-
 	re, err := regexp.Compile(*extractionRegex)
 	if err != nil {
 		log.Fatalf("%v (learn more: https://github.com/google/re2/wiki/Syntax)")
 	}
-
 	if *recordRegex {
 		// TODO(miku): make NS list configurable.
 		fmt.Println(`<collection xmlns:zs="http://www.loc.gov/zing/srw/" xmlns:marc="http://www.loc.gov/MARC21/slim">`)
 	}
-
 	client := pester.New()
 	client.Backoff = pester.ExponentialBackoff
 	client.MaxRetries = 7
 	client.SetRetryOnHTTP429(true)
-
 	// By how much we progress.
 	var (
 		inc               = *maximumRecords
 		lastRequestFailed bool
 	)
-
 	for {
 		// Wrap request into function, so we can defer the close on response
 		// body. Returns io.EOF, when done.
 		fetch := func() error {
 			vs.Set("startRecord", strconv.Itoa(*startRecord))
-
 			if *randomizeRecordsPerRequest {
 				inc = 1 + rand.Intn(*maximumRecords-1)
 			}
@@ -167,12 +156,10 @@ func main() {
 				inc = 1 // Crawl forward, so we miss as little as possible.
 			}
 			vs.Set("maximumRecords", strconv.Itoa(inc))
-
 			link := fmt.Sprintf("%s?%s", *endpoint, vs.Encode())
 			if *verbose {
 				log.Println(link)
 			}
-
 			req, err := http.NewRequest("GET", link, nil)
 			if err != nil {
 				log.Fatal(err)
@@ -197,7 +184,6 @@ func main() {
 			} else {
 				lastRequestFailed = false
 			}
-
 			// Make sure we progress, even in the presence of errors.
 			*startRecord = *startRecord + inc
 
@@ -211,7 +197,6 @@ func main() {
 			}
 			var buf bytes.Buffer
 			tee := io.TeeReader(resp.Body, &buf)
-
 			dec := xml.NewDecoder(tee)
 			var srr SearchRetrieveResponse
 			if err := dec.Decode(&srr); err != nil {
@@ -236,7 +221,6 @@ func main() {
 			}
 			return nil
 		}
-
 		err = fetch()
 		if err == io.EOF {
 			break
@@ -245,7 +229,6 @@ func main() {
 			log.Fatal(err)
 		}
 	}
-
 	if *recordRegex {
 		fmt.Println("</collection>")
 	}
